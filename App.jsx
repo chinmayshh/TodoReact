@@ -7,11 +7,32 @@ export default function TodoApp() {
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
 
-  // Load todos from memory storage on component mount
+  // Load todos from localStorage
   useEffect(() => {
-    // Start with empty array - no localStorage usage
-    setTodos([]);
+    try {
+      const savedTodos = localStorage.getItem("todos");
+      if (savedTodos) {
+        setTodos(JSON.parse(savedTodos));
+      }
+    } catch (error) {
+      console.error("Error loading todos from localStorage:", error);
+      // Fallback to empty array
+      setTodos([]);
+    }
   }, []);
+
+  // Save todos to local Storage
+  useEffect(() => {
+    try {
+      if (todos.length > 0) {
+        localStorage.setItem("todos", JSON.stringify(todos));
+      } else {
+        localStorage.removeItem("todos");
+      }
+    } catch (error) {
+      console.error("Error saving todos:", error);
+    }
+  }, [todos]);
 
   const addTodo = () => {
     if (newTodo.trim()) {
